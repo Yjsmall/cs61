@@ -97,6 +97,9 @@ public class SpeciesListStage implements AdventureStage {
      * double in [0, 1]
      */
     public static double arraySimilarity(List<String> listOne, List<String> listTwo) {
+        if (listOne.isEmpty()) {
+            return 0;
+        }
         List<String> copy = new ArrayList<>(listOne);
         int similarObjects = 0;
         for (String o : listTwo) {
