@@ -92,9 +92,14 @@ public class Model {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
-
-
+        for (int row = 0; row < b.size(); row++) {
+            for (int col = 0; col < b.size(); col++) {
+                Tile tile = b.tile(col, row);
+                if (tile == null || tile.value() == 0) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -104,12 +109,40 @@ public class Model {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
-
-
+        for (int row = 0; row < b.size(); row++) {
+            for (int col = 0; col < b.size(); col++) {
+                Tile tile = b.tile(col, row);
+                if (tile != null && tile.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
+    /**
+     * Determine if the current line has the same element.
+     */
+    private static boolean rowEqualElements(Board b, int line) {
+        for (int col = 0; col < b.size() - 1; col++) {
+            if (b.tile(col, line).value() == b.tile(col+1, line).value()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if the current column has the same element
+     */
+    private static boolean colEqualElements(Board b, int line) {
+        for (int row = 0; row < b.size() - 1; row++) {
+            if (b.tile(line, row).value() == b.tile(line, row + 1).value()) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Returns true if there are any valid moves on the board.
      * There are two ways that there can be valid moves:
@@ -117,8 +150,16 @@ public class Model {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        } else if (maxTileExists(b)) {
+            return true;
+        }
 
+        for (int line = 0; line < b.size(); line++) {
+            if (rowEqualElements(b, line)) return true;
+            if (colEqualElements(b, line)) return true;
+        }
 
         return false;
     }
