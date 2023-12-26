@@ -1,5 +1,6 @@
 package game2048;
 
+import java.util.ArrayList;
 import java.util.Formatter;
 
 
@@ -163,6 +164,27 @@ public class Model {
 
         return false;
     }
+    private static void moveEqualElements(Board b) {
+        ArrayList<ArrayList<Tile>> arr = new ArrayList<>();
+        for (int col = 0; col < b.size(); col++) {
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int row = 0; row < b.size(); row++) {
+                Tile tile = b.tile(col, row);
+                if (tile != null) {
+                    tiles.add(tile);
+                }
+            }
+            arr.add(tiles);
+        }
+
+        for (int col = 0; col < arr.size(); col++) {
+            ArrayList<Tile> tiles = arr.get(col);
+            for (int row = 0; row < tiles.size(); row++) {
+                b.move(col, row, tiles.get(row));
+            }
+        }
+
+    }
 
     /** Tilt the board toward SIDE.
      *
@@ -179,7 +201,10 @@ public class Model {
     public void tilt(Side side) {
         // TODO: Modify this.board (and if applicable, this.score) to account
         // for the tilt to the Side SIDE.
+        Board b = this.board;
+        b.setViewingPerspective(side);
 
+        moveEqualElements(b);
 
         checkGameOver();
     }
