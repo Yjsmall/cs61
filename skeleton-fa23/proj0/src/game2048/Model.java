@@ -164,7 +164,7 @@ public class Model {
 
         return false;
     }
-    private static void moveEqualElements(Board b) {
+    private static void moveElements(Board b) {
         ArrayList<ArrayList<Tile>> arr = new ArrayList<>();
         for (int col = 0; col < b.size(); col++) {
             ArrayList<Tile> tiles = new ArrayList<>();
@@ -179,11 +179,50 @@ public class Model {
 
         for (int col = 0; col < arr.size(); col++) {
             ArrayList<Tile> tiles = arr.get(col);
-            for (int row = 0; row < tiles.size(); row++) {
-                b.move(col, row, tiles.get(row));
+            // 最后一个元素最先移动
+            // 注意 board 的xy 轴
+            for (int i = tiles.size()-1; i >= 0; i--) {
+                int row = b.size() - tiles.size() + i;
+                b.move(col, row, tiles.get(i));
             }
         }
 
+    }
+
+    private static void mergeElements(Board b) {
+        ArrayList<ArrayList<Tile>> arr = new ArrayList<>();
+        for (int col = 0; col < b.size(); col++) {
+            ArrayList<Tile> tiles = new ArrayList<>();
+            for (int row = 0; row < b.size(); row++) {
+                Tile tile = b.tile(col, row);
+                if (tile != null) {
+                    tiles.add(tile);
+                }
+            }
+            arr.add(tiles);
+        }
+
+        for (int col = 0; col < b.size(); col++) {
+            int empty = 0;
+            for (int row = b.size()-1; row >= 0; row--) {
+                Tile cur = b.tile(col, row);
+                if (cur == null) {
+                    break;
+                }
+
+                if (empty != 0) {
+                    b.move(col, empty, cur);
+                    empty -= 1;
+                } else {
+                    Tile next = b.tile(col, row-1);
+                    if (next != null && next.value() == cur.value()) {
+                        b.move(col, row, next);
+                        empty = --row;
+                        continue;
+                    }
+                }
+            }
+        }
     }
 
     /** Tilt the board toward SIDE.
@@ -201,10 +240,12 @@ public class Model {
     public void tilt(Side side) {
         // TODO: Modify this.board (and if applicable, this.score) to account
         // for the tilt to the Side SIDE.
+        System.out.println(side.toString());
         Board b = this.board;
         b.setViewingPerspective(side);
 
-        moveEqualElements(b);
+        moveElements(b);
+        mergeElements(b);
 
         checkGameOver();
     }
