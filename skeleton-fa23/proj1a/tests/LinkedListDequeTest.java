@@ -11,16 +11,16 @@ import static com.google.common.truth.Truth.assertWithMessage;
 /** Performs some basic linked list tests. */
 public class LinkedListDequeTest {
 
-    // @Test
-    // @DisplayName("LinkedListDeque has no fields besides nodes and primitives")
-    // void noNonTrivialFields() {
-    //     Class<?> nodeClass = NodeChecker.getNodeClass(LinkedListDeque.class, true);
-    //     List<Field> badFields = Reflection.getFields(LinkedListDeque.class)
-    //             .filter(f -> !(f.getType().isPrimitive() || f.getType().equals(nodeClass) || f.isSynthetic()))
-    //             .toList();
+     @Test
+     @DisplayName("LinkedListDeque has no fields besides nodes and primitives")
+     void noNonTrivialFields() {
+         Class<?> nodeClass = NodeChecker.getNodeClass(LinkedListDeque.class, true);
+         List<Field> badFields = Reflection.getFields(LinkedListDeque.class)
+                 .filter(f -> !(f.getType().isPrimitive() || f.getType().equals(nodeClass) || f.isSynthetic()))
+                 .toList();
 
-    //     assertWithMessage("Found fields that are not nodes or primitives").that(badFields).isEmpty();
-    // }
+         assertWithMessage("Found fields that are not nodes or primitives").that(badFields).isEmpty();
+     }
 
     // @Test
     // /** In this test, we have three different assert statements that verify that addFirst works correctly. */
