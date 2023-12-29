@@ -1,68 +1,150 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class LinkedListDeque<T> implements Deque<T> {
-    private class Node<T> {
+    private static class Node<T> {
         T value;
-        Node next;
-        Node previous;
+        Node<T> next;
+        Node<T> previous;
         public Node() {
+            next = this;
+            previous = this;
         }
 
-        public Node(T val, Node nxt, Node pre) {
+        public Node(T val, Node<T> pre, Node<T> nxt) {
             value = val;
             next = nxt;
             previous = pre;
         }
     }
-    private Node sentinel;
+
+    /**
+     * sentinel.next = first;
+     * sentinel.previous = last;
+     */
+    private Node<T> sentinel;
+
     private int size;
     public LinkedListDeque(){
-        sentinel = new Node<>(null, null, null);
+        sentinel = new Node<>();
         size = 0;
     }
     @Override
     public void addFirst(T x) {
-        Node<T> node = new Node<>(x, sentinel, sentinel.previous);
+        Node<T> node;
+        if (size == 0) {
+            node = new Node<>(x, sentinel, sentinel);
+            sentinel.previous = node;
+        } else {
+            node = new Node<>(x, sentinel, sentinel.next);
+            sentinel.next.previous = node;
+        }
+        sentinel.next = node;
         size++;
     }
 
     @Override
     public void addLast(T x) {
-
+        Node<T> node;
+        if (size == 0) {
+            node = new Node<>(x, sentinel, sentinel);
+            sentinel.next = node;
+        } else {
+            node = new Node<>(x, sentinel.previous, sentinel);
+            sentinel.previous.next = node;
+        }
+        sentinel.previous = node;
+        size++;
     }
 
     @Override
     public List<T> toList() {
-        return null;
+        List<T> returnList = new ArrayList<>();
+        Node<T> cur = this.sentinel.next;
+        int size = size();
+        while (size > 0) {
+            returnList.add(cur.value);
+            cur = cur.next;
+            size--;
+        }
+        return returnList;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public T removeFirst() {
-        return null;
+        if (isEmpty()) {return null;}
+        Node<T> node = sentinel.next;
+        if (size == 1) {
+            sentinel.next = sentinel;
+            sentinel.previous = sentinel;
+        }
+
+        sentinel.next = sentinel.next.next;
+        size--;
+        return node.value;
     }
 
     @Override
     public T removeLast() {
-        return null;
+        if (isEmpty()) {return null;}
+        Node<T> node = sentinel.previous;
+        if (size == 1) {
+            sentinel.next = sentinel;
+            sentinel.previous = sentinel;
+        }
+
+        sentinel.previous = sentinel.previous.previous;
+        size--;
+        return node.value;
     }
 
     @Override
     public T get(int index) {
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+
+        if (index < 0 || index >= size) {
+            return null;
+        }
+
+        Node<T> cur = sentinel.next;
+        for (int i = 0; i < index; i++) {
+            cur = cur.next;
+        }
+        return cur.value;
+    }
+
+    private T getRecursive(int index, Node<T> node) {
+        if (isEmpty()) {
+            return null;
+        }
+
+        if (index < 0 || index >= size) {
+            return null;
+        }
+
+        if (index == 0) {
+            return node.value;
+        } else {
+            return getRecursive(--index, node.next);
+        }
+
     }
 
     @Override
     public T getRecursive(int index) {
-        return null;
+        return getRecursive(index, sentinel.next);
     }
 }
