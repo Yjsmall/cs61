@@ -34,7 +34,7 @@ public class ArrayDeque<T> implements Deque<T> {
             resize(size * REFACTOR);
         }
         items[first] = x;
-        first = --first % items.length;
+        first = (first - 1 + items.length) % items.length;
         size++;
     }
 
@@ -45,7 +45,7 @@ public class ArrayDeque<T> implements Deque<T> {
         }
         items[last] = x;
 
-        last = ++last % items.length;
+        last = (last + 1 + items.length) % items.length;
         size++;
     }
 
@@ -79,14 +79,56 @@ public class ArrayDeque<T> implements Deque<T> {
         return this.size;
     }
 
+    private void resizeDown(int capacity) {
+    if (capacity < 8 || capacity >= items.length) {
+        return; // Avoid resizing to an invalid or insufficiently small capacity
+    }
+
+    T[] newArray = (T[]) new Object[capacity];
+
+    // Copy elements to the new array with updated indices
+    int newIndex = capacity / 4; // Set a new starting index for the resized array
+    for (int i = 0; i < size; i++) {
+        newArray[newIndex + i] = items[(first + 1 + i) % items.length];
+    }
+
+    // Update the first and last indices and replace the old array with the new one
+    first = capacity / 4 - 1;
+    last = first + size + 1;
+    items = newArray;
+}
+
     @Override
     public T removeFirst() {
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+        int pos = (first + 1 + items.length) % items.length;
+        T removedItem = items[pos];
+        items[pos] = null;
+        first = pos;
+        size--;
+        if (size < items.length / 4) {
+            resizeDown(items.length / REFACTOR);
+        }
+        return removedItem;
     }
 
     @Override
     public T removeLast() {
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+        int pos = (last - 1 + items.length) % items.length;
+        T removedItem = items[pos];
+        items[pos] = null;
+        last = pos;
+        size--;
+
+        if (size < items.length / 4) {
+            resizeDown(items.length / REFACTOR);
+        }
+        return removedItem;
     }
 
     @Override
@@ -113,6 +155,6 @@ public class ArrayDeque<T> implements Deque<T> {
 
     @Override
     public T getRecursive(int index) {
-        return null;
+        throw new UnsupportedOperationException("No need to implement getRecursive for proj 1b");
     }
 }
