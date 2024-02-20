@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class LinkedListDeque<T> implements Deque<T> {
@@ -7,6 +6,7 @@ public class LinkedListDeque<T> implements Deque<T> {
         T value;
         Node<T> next;
         Node<T> previous;
+
         public Node() {
             next = this;
             previous = this;
@@ -26,10 +26,12 @@ public class LinkedListDeque<T> implements Deque<T> {
     private Node<T> sentinel;
 
     private int size;
-    public LinkedListDeque(){
+
+    public LinkedListDeque() {
         sentinel = new Node<>();
         size = 0;
     }
+
     @Override
     public void addFirst(T x) {
         Node<T> node;
@@ -83,30 +85,45 @@ public class LinkedListDeque<T> implements Deque<T> {
 
     @Override
     public T removeFirst() {
-        if (isEmpty()) {return null;}
-        Node<T> node = sentinel.next;
+        if (isEmpty()) {
+            return null;
+        }
+
+        Node<T> firstNode = sentinel.next;
+
         if (size == 1) {
             sentinel.next = sentinel;
             sentinel.previous = sentinel;
+            firstNode.next = null;
+            firstNode.previous = null;
+        } else {
+            sentinel.next = firstNode.next;
+            firstNode.next.previous = sentinel;
         }
 
-        sentinel.next = sentinel.next.next;
         size--;
-        return node.value;
+        return firstNode.value;
     }
 
     @Override
     public T removeLast() {
-        if (isEmpty()) {return null;}
-        Node<T> node = sentinel.previous;
+        if (isEmpty()) {
+            return null;
+        }
+
+        Node<T> lastNode = sentinel.previous;
         if (size == 1) {
             sentinel.next = sentinel;
             sentinel.previous = sentinel;
+            lastNode.next = null;
+            lastNode.previous = null;
+        } else {
+            sentinel.previous = lastNode.previous;
+            lastNode.previous.next = sentinel;
         }
 
-        sentinel.previous = sentinel.previous.previous;
         size--;
-        return node.value;
+        return lastNode.value;
     }
 
     @Override
